@@ -1,12 +1,18 @@
 ﻿@page "/posts/{url}"
 @inject fInancialFinesseProject.Client.Services.IBlogService BlogService
-@using Microsoft.AspNetCore.Components;
 
-<h3>@CurrentPost.Title</h3>
+@if (CurrentPost == null)
+{
+    <span>Getting that Blog Post from the service...</span>
+}
+else
+{
+    <h3>@CurrentPost.Title</h3>
 
-<div>
-    @CurrentPost.Content
-</div>
+    <div>
+        @CurrentPost.Content
+    </div>
+}
 
 @code {
     private fInancialFinesseProject.Shared.Domain.BlogPost CurrentPost;
@@ -14,8 +20,8 @@
     [Parameter]
     public string Url { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        CurrentPost = BlogService.GetBlogPostByUrl(Url);
+        CurrentPost = await BlogService.GetBlogPostByUrl(Url);
     }
 }

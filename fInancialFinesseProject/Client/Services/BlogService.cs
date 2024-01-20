@@ -1,25 +1,29 @@
 ﻿using fInancialFinesseProject.Shared.Domain;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Reflection.Metadata.Ecma335;
 
 namespace fInancialFinesseProject.Client.Services
 {
     public class BlogService : IBlogService
     {
-        public List<BlogPost> Posts { get; set; } = new List<BlogPost>()
+        private readonly HttpClient _http;
+
+        public BlogService(HttpClient http)
         {
-            new BlogPost {Url = "new-Tutorial", Title="A New Tutorial about Blazor", Description="This is a new tutorial, showing you how to build a blog with Blazor", Content="adssadsadsadsadasdsadsadsadsadsadsadsadsadsadsadsadasdsadsa"},
-            new BlogPost {Url = "first-post", Title="My First Blog Post", Description="Hi! This is my new blog. Enjoy!", Content="This is my new beautiful post!"}
-        };
-        public BlogPost GetBlogPostByUrl(string url)
-        {
-            return Posts.FirstOrDefault(p => p.Url.ToLower().Equals(url.ToLower()));
+                _http = http;
         }
 
-        public List<BlogPost> GetBlogPosts()
+        public async Task<BlogPost> GetBlogPostByUrl(string url)
         {
-            return Posts;
+            var post = await _http.GetFromJsonAsync<BlogPost>($"api/Blog/{url}");
+            return post;
+        }
+
+        public async Task<List<BlogPost>> GetBlogPosts()
+        {
+            return await _http.GetFromJsonAsync<List<BlogPost>>($"api/Blog");
         }
     }
 }
